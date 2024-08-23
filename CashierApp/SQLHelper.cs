@@ -27,6 +27,7 @@ namespace CashierApp
                 }
             }
         }
+
         // Thực hiện truy vấn không có tham số
         public DataTable ExecuteQuery(string query)
         {
@@ -117,4 +118,3 @@ namespace CashierApp
         }
     }
 }
-
