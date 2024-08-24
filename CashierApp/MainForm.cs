@@ -371,8 +371,8 @@ namespace CashierApp
 
         private void quảnLýTàiKhoảnToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           // UserManagementForm userManagementForm = new UserManagementForm();
-          //  userManagementForm.Show();
+            UserManagementForm userManagementForm = new UserManagementForm();
+            userManagementForm.Show();
         }
 
         private void button1_Click(object sender, EventArgs e)

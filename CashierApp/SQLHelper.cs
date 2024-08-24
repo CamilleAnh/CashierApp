@@ -116,8 +116,25 @@ namespace CashierApp
             }
         }
 
-        // Thực hiện câu lệnh không truy vấn với tham số
-        public int ExecuteNonQueryWithParams(string query, SqlParameter[] parameters)
+
+        public int ExecuteNonQuery(string query, SqlParameter[] parameters = null)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    if (parameters != null)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+                    conn.Open();
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+        }
+    
+    // Thực hiện câu lệnh không truy vấn với tham số
+    public int ExecuteNonQueryWithParams(string query, SqlParameter[] parameters)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
