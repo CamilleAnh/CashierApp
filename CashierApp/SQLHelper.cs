@@ -27,6 +27,30 @@ namespace CashierApp
                 }
             }
         }
+        public DataTable ExecuteQuery(string query, SqlParameter[] parameters)
+        {
+            DataTable dataTable = new DataTable();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                if (parameters != null)
+                {
+                    command.Parameters.AddRange(parameters);
+                }
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                try
+                {
+                    connection.Open();  // Đảm bảo kết nối được mở
+                    adapter.Fill(dataTable);
+                }
+                catch (Exception ex)
+                {
+                    // Log lỗi hoặc thông báo lỗi ở đây nếu cần
+                    throw new ApplicationException("Error executing query with parameters.", ex);
+                }
+            }
+            return dataTable;
+        }
 
         // Thực hiện truy vấn không có tham số
         public DataTable ExecuteQuery(string query)
