@@ -58,6 +58,18 @@
     <Compile Include="InventoryForm.Designer.cs">
       <DependentUpon>InventoryForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="InvoiceDetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InvoiceDetailsForm.Designer.cs">
+      <DependentUpon>InvoiceDetailsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InvoiceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InvoiceForm.Designer.cs">
+      <DependentUpon>InvoiceForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,6 +100,9 @@
     </Compile>
     <EmbeddedResource Include="InventoryForm.resx">
       <DependentUpon>InventoryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InvoiceForm.resx">
+      <DependentUpon>InvoiceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>

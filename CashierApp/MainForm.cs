@@ -360,8 +360,8 @@ namespace CashierApp
 
         private void hóaĐơnToolStripMenuItem_Click(object sender, EventArgs e)
         {
-       //     InvoiceForm invoiceForm = new InvoiceForm();
-          //  invoiceForm.Show();
+            InvoiceForm invoiceForm = new InvoiceForm();
+            invoiceForm.Show();
         }
 
         private void totalLabel_Click(object sender, EventArgs e)

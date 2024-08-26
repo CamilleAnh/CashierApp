@@ -52,6 +52,21 @@ namespace CashierApp
             return dataTable;
         }
 
+        public int ExecuteNonQuery(string query, SqlParameter[] parameters = null)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    if (parameters != null)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+        }
         // Thực hiện truy vấn không có tham số
         public DataTable ExecuteQuery(string query)
         {
@@ -116,22 +131,6 @@ namespace CashierApp
             }
         }
 
-
-        public int ExecuteNonQuery(string query, SqlParameter[] parameters = null)
-        {
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    if (parameters != null)
-                    {
-                        cmd.Parameters.AddRange(parameters);
-                    }
-                    conn.Open();
-                    return cmd.ExecuteNonQuery();
-                }
-            }
-        }
     
     // Thực hiện câu lệnh không truy vấn với tham số
     public int ExecuteNonQueryWithParams(string query, SqlParameter[] parameters)
