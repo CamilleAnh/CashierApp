@@ -380,6 +380,9 @@ namespace CashierApp
             LoadProductButtons(); // Refresh product list when button is clicked
         }
 
+        private void invoiceGrid_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
 
+        }
     }
 }

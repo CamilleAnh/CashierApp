@@ -78,6 +78,7 @@ namespace CashierApp
         private void InitializeComponent()
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.quảnLýTàiKhoảnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quảnLýKhoHàngToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.thanhToánToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hóaĐơnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,11 +90,10 @@ namespace CashierApp
             this.searchButton = new System.Windows.Forms.Button();
             this.searchBox = new System.Windows.Forms.TextBox();
             this.rightPanel = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.invoiceGrid = new System.Windows.Forms.DataGridView();
             this.payButton = new System.Windows.Forms.Button();
             this.totalLabel = new System.Windows.Forms.Label();
-            this.quảnLýTàiKhoảnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
@@ -118,6 +118,13 @@ namespace CashierApp
             this.menuStrip1.Size = new System.Drawing.Size(800, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // quảnLýTàiKhoảnToolStripMenuItem
+            // 
+            this.quảnLýTàiKhoảnToolStripMenuItem.Name = "quảnLýTàiKhoảnToolStripMenuItem";
+            this.quảnLýTàiKhoảnToolStripMenuItem.Size = new System.Drawing.Size(116, 20);
+            this.quảnLýTàiKhoảnToolStripMenuItem.Text = "Quản Lý Tài Khoản";
+            this.quảnLýTàiKhoảnToolStripMenuItem.Click += new System.EventHandler(this.quảnLýTàiKhoảnToolStripMenuItem_Click);
             // 
             // quảnLýKhoHàngToolStripMenuItem
             // 
@@ -221,6 +228,17 @@ namespace CashierApp
             this.rightPanel.Size = new System.Drawing.Size(396, 576);
             this.rightPanel.TabIndex = 0;
             // 
+            // button1
+            // 
+            this.button1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.button1.Location = new System.Drawing.Point(0, 488);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(396, 41);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "Làm Mới";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // invoiceGrid
             // 
             this.invoiceGrid.AllowUserToAddRows = false;
@@ -233,6 +251,7 @@ namespace CashierApp
             this.invoiceGrid.ReadOnly = true;
             this.invoiceGrid.Size = new System.Drawing.Size(396, 435);
             this.invoiceGrid.TabIndex = 0;
+            this.invoiceGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.invoiceGrid_CellContentClick_1);
             // 
             // payButton
             // 
@@ -255,24 +274,6 @@ namespace CashierApp
             this.totalLabel.Text = "Tổng Tiền: 0.00 VND";
             this.totalLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.totalLabel.Click += new System.EventHandler(this.totalLabel_Click);
-            // 
-            // quảnLýTàiKhoảnToolStripMenuItem
-            // 
-            this.quảnLýTàiKhoảnToolStripMenuItem.Name = "quảnLýTàiKhoảnToolStripMenuItem";
-            this.quảnLýTàiKhoảnToolStripMenuItem.Size = new System.Drawing.Size(116, 20);
-            this.quảnLýTàiKhoảnToolStripMenuItem.Text = "Quản Lý Tài Khoản";
-            this.quảnLýTàiKhoảnToolStripMenuItem.Click += new System.EventHandler(this.quảnLýTàiKhoảnToolStripMenuItem_Click);
-            // 
-            // button1
-            // 
-            this.button1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.button1.Location = new System.Drawing.Point(0, 488);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(396, 41);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "Làm Mới";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // MainForm
             // 

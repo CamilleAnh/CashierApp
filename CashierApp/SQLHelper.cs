@@ -12,7 +12,7 @@ namespace CashierApp
         public SQLHelper()
         {
             // Sử dụng chuỗi kết nối của bạn ở đây
-            connectionString = "Server=HUONGANH-LENOVO\\SQLEXPRESS;Database=CashierAppDB;User Id=sa;Password=123456;";
+            connectionString = "Server=LAPTOP-1JHTGG11;Database=CashierAppDB;User Id=sa;Password=123456;";
         }
 
         public object ExecuteScalarWithParams(string query, SqlParameter[] parameters)
