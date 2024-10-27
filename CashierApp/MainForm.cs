@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace CashierApp
 {
@@ -66,6 +67,13 @@ namespace CashierApp
                     }
                 }
             }
+        }
+        public class Product
+        {
+            public int ProductID { get; set; } // Mã sản phẩm
+            public string Name { get; set; }    // Tên sản phẩm
+            public decimal Price { get; set; }  // Giá sản phẩm
+            public string Barcode { get; set; } // Mã vạch sản phẩm
         }
 
         private void invoiceGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -131,7 +139,7 @@ namespace CashierApp
 
         private void LoadProductButtons()
         {
-            string query = "SELECT ProductID, ProductName, Price FROM Products";
+            string query = "SELECT ProductID, ProductName, Price, Barcode FROM Products";
             DataTable productsTable = _sqlHelper.ExecuteQuery(query);
 
             productPanel.Controls.Clear(); // Clear existing product buttons
@@ -141,11 +149,12 @@ namespace CashierApp
                 string productName = row["ProductName"].ToString();
                 decimal price = (decimal)row["Price"];
                 int productId = (int)row["ProductID"];
+                string barcode = row["Barcode"].ToString(); // Lấy mã vạch sản phẩm
 
                 Button productButton = new Button
                 {
                     Text = productName,
-                    Tag = new { ProductID = productId, Price = price }, // Store ProductID and price in the Tag property
+                    Tag = new { ProductID = productId, Price = price, Barcode = barcode }, // Lưu cả Barcode vào Tag
                     Width = 200,
                     Height = 50,
                     Margin = new Padding(10)
@@ -154,6 +163,7 @@ namespace CashierApp
                 productPanel.Controls.Add(productButton);
             }
         }
+
 
         private void ProductButton_Click(object sender, EventArgs e)
         {
@@ -193,15 +203,17 @@ namespace CashierApp
 
         private void UpdateTotalAmount()
         {
-            double total = 0.00;
+            decimal totalAmount = 0;
+
             foreach (DataGridViewRow row in invoiceGrid.Rows)
             {
                 if (row.Cells["Total"].Value != null)
                 {
-                    total += Convert.ToDouble(row.Cells["Total"].Value);
+                    totalAmount += Convert.ToDecimal(row.Cells["Total"].Value);
                 }
             }
-            totalLabel.Text = $"Tổng Tiền: {total:F2} VND";
+
+            totalLabel.Text = $"Tổng Tiền: {totalAmount:C2} VND"; // Định dạng tiền tệ
         }
 
         private void SearchProducts(string query)
@@ -355,7 +367,87 @@ namespace CashierApp
 
         private void searchButton_Click(object sender, EventArgs e)
         {
-            SearchProducts(searchBox.Text);
+            string query = searchBox.Text.Trim();
+
+            // Nếu nhập mã vạch
+            if (IsBarcode(query))
+            {
+                AddProductToInvoiceByBarcode(query);
+            }
+            else
+            {
+                SearchProducts(query);
+            }
+            searchBox.Clear();
+        }
+
+        private bool IsBarcode(string query)
+        {
+            return query.All(char.IsDigit); // Giả định rằng mã vạch chỉ chứa số
+        }
+
+
+        private void AddProductToInvoiceByBarcode(string barcode)
+        {
+            Product product = GetProductByBarcode(barcode);
+
+            if (product != null)
+            {
+                // Kiểm tra xem sản phẩm đã có trong hóa đơn hay chưa
+                foreach (DataGridViewRow row in invoiceGrid.Rows)
+                {
+                    if (row.Cells["ProductName"].Value != null && row.Cells["ProductName"].Value.ToString() == product.Name)
+                    {
+                        // Tăng số lượng sản phẩm nếu đã có trong hóa đơn
+                        int currentQuantity = Convert.ToInt32(row.Cells["Quantity"].Value);
+                        row.Cells["Quantity"].Value = currentQuantity + 1;
+                        row.Cells["Total"].Value = (currentQuantity + 1) * product.Price;
+                        UpdateTotalAmount();
+                        return;
+                    }
+                }
+
+                // Nếu sản phẩm chưa có trong hóa đơn, thêm mới vào
+                int index = invoiceGrid.Rows.Add();
+                invoiceGrid.Rows[index].Cells["ProductName"].Value = product.Name;
+                invoiceGrid.Rows[index].Cells["UnitPrice"].Value = product.Price;
+                invoiceGrid.Rows[index].Cells["Quantity"].Value = 1;
+                invoiceGrid.Rows[index].Cells["Total"].Value = product.Price;
+
+                // Cập nhật tổng tiền
+                UpdateTotalAmount();
+            }
+            else
+            {
+                MessageBox.Show("Không tìm thấy sản phẩm với mã vạch này.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+
+        private Product GetProductByBarcode(string barcode)
+        {
+            string query = "SELECT ProductID, ProductName, Price, Barcode FROM Products WHERE Barcode = @Barcode";
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@Barcode", barcode)
+            };
+
+            DataTable result = _sqlHelper.ExecuteQuery(query, parameters);
+            if (result.Rows.Count > 0)
+            {
+                DataRow row = result.Rows[0];
+                return new Product
+                {
+                    ProductID = Convert.ToInt32(row["ProductID"]),
+                    Name = row["ProductName"].ToString(),
+                    Price = Convert.ToDecimal(row["Price"]),
+                    Barcode = row["Barcode"].ToString()
+                };
+            }
+
+            return null; // Trả về null nếu không tìm thấy sản phẩm với mã vạch đã nhập
         }
 
         private void hóaĐơnToolStripMenuItem_Click(object sender, EventArgs e)
