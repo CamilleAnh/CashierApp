@@ -26,7 +26,58 @@ namespace CashierApp
         {
             InitializeInvoiceGrid(); // Initialize the DataGridView columns
             LoadProductButtons();     // Load product buttons on form load
+            this.ActiveControl = this;  // Đảm bảo form luôn có focus
+            this.Focus();
         }
+
+        private string scannedBarcode = "";
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                // Khi nhận phím Enter, xử lý chuỗi mã vạch
+                ProcessScannedBarcode(scannedBarcode);
+                scannedBarcode = "";  // Xóa chuỗi mã vạch để bắt đầu chuỗi mới
+            }
+            else
+            {
+                // Ghi nhận từng ký tự vào chuỗi mã vạch
+                scannedBarcode += e.KeyCode.ToString();
+            }
+        }
+
+        private void ProcessScannedBarcode(string barcode)
+        {
+            Product product = GetProductByBarcode(barcode); // Tìm sản phẩm bằng mã vạch
+
+            if (product != null)
+            {
+                // Tìm và nhấn nút sản phẩm tương ứng
+                foreach (Button productButton in productPanel.Controls.OfType<Button>())
+                {
+                    dynamic productInfo = productButton.Tag;
+                    if (productInfo.Barcode == barcode)
+                    {
+                        productButton.PerformClick(); // Giả lập hành động nhấn nút
+                        return;
+                    }
+                }
+
+                MessageBox.Show("Không tìm thấy nút sản phẩm với mã vạch này.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                MessageBox.Show("Không tìm thấy sản phẩm với mã vạch này.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            this.ActiveControl = this;
+            this.Focus(); // Đảm bảo form luôn được focus khi quét mã
+        }
+
 
 
         private void invoiceGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -218,14 +269,14 @@ namespace CashierApp
 
         private void SearchProducts(string query)
         {
-            string sqlQuery = "SELECT ProductID, ProductName, Price FROM Products WHERE ProductName LIKE @query OR Barcode LIKE @query";
+            string sqlQuery = "SELECT ProductID, ProductName, Price FROM Products WHERE ProductName LIKE @query";
             SqlParameter[] parameters = new SqlParameter[]
             {
-                new SqlParameter("@query", "%" + query + "%")
+        new SqlParameter("@query", "%" + query + "%")
             };
             DataTable productsTable = _sqlHelper.ExecuteQuery(sqlQuery, parameters);
 
-            productPanel.Controls.Clear(); // Clear existing product buttons
+            productPanel.Controls.Clear(); // Xóa các nút sản phẩm hiện tại
 
             foreach (DataRow row in productsTable.Rows)
             {
@@ -236,7 +287,7 @@ namespace CashierApp
                 Button productButton = new Button
                 {
                     Text = productName,
-                    Tag = new { ProductID = productId, Price = price }, // Store ProductID and price in the Tag property
+                    Tag = new { ProductID = productId, Price = price }, // Lưu ProductID và giá vào thuộc tính Tag
                     Width = 200,
                     Height = 50,
                     Margin = new Padding(10)
@@ -245,6 +296,7 @@ namespace CashierApp
                 productPanel.Controls.Add(productButton);
             }
         }
+
 
         private void payButton_Click(object sender, EventArgs e)
         {
@@ -369,23 +421,17 @@ namespace CashierApp
         {
             string query = searchBox.Text.Trim();
 
-            // Nếu nhập mã vạch
-            if (IsBarcode(query))
-            {
-                AddProductToInvoiceByBarcode(query);
-            }
-            else
-            {
-                SearchProducts(query);
-            }
+            // Chỉ lọc sản phẩm theo tên
+            SearchProducts(query);
+
             searchBox.Clear();
         }
+
 
         private bool IsBarcode(string query)
         {
             return query.All(char.IsDigit); // Giả định rằng mã vạch chỉ chứa số
         }
-
 
         private void AddProductToInvoiceByBarcode(string barcode)
         {
@@ -393,35 +439,26 @@ namespace CashierApp
 
             if (product != null)
             {
-                // Kiểm tra xem sản phẩm đã có trong hóa đơn hay chưa
-                foreach (DataGridViewRow row in invoiceGrid.Rows)
+                // Tìm và nhấn nút sản phẩm tương ứng dựa trên mã vạch
+                foreach (Button productButton in productPanel.Controls.OfType<Button>())
                 {
-                    if (row.Cells["ProductName"].Value != null && row.Cells["ProductName"].Value.ToString() == product.Name)
+                    dynamic productInfo = productButton.Tag;
+                    if (productInfo.Barcode == barcode) // So sánh mã vạch
                     {
-                        // Tăng số lượng sản phẩm nếu đã có trong hóa đơn
-                        int currentQuantity = Convert.ToInt32(row.Cells["Quantity"].Value);
-                        row.Cells["Quantity"].Value = currentQuantity + 1;
-                        row.Cells["Total"].Value = (currentQuantity + 1) * product.Price;
-                        UpdateTotalAmount();
+                        // Giả lập hành động nhấn nút
+                        productButton.PerformClick();
                         return;
                     }
                 }
 
-                // Nếu sản phẩm chưa có trong hóa đơn, thêm mới vào
-                int index = invoiceGrid.Rows.Add();
-                invoiceGrid.Rows[index].Cells["ProductName"].Value = product.Name;
-                invoiceGrid.Rows[index].Cells["UnitPrice"].Value = product.Price;
-                invoiceGrid.Rows[index].Cells["Quantity"].Value = 1;
-                invoiceGrid.Rows[index].Cells["Total"].Value = product.Price;
-
-                // Cập nhật tổng tiền
-                UpdateTotalAmount();
+                MessageBox.Show("Không tìm thấy nút sản phẩm với mã vạch này.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
                 MessageBox.Show("Không tìm thấy sản phẩm với mã vạch này.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
 
 
